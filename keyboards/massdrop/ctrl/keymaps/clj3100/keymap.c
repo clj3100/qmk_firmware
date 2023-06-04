@@ -8,6 +8,8 @@ enum ctrl_keycodes {
     DBG_KBD,               //DEBUG Toggle Keyboard Prints
     DBG_MOU,               //DEBUG Toggle Mouse Prints
     MD_BOOT,               //Restart into bootloader after hold timeout
+    RGB_TOGL,              //Creating alternate RGB toggle for backlight
+    GU_TOGGL,              //Creating alternate GUI toggle
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -24,8 +26,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,   KC_MPLY, KC_MSTP, KC_VOLU,
         _______, RGB_SPD, RGB_VAI, RGB_SPI, RGB_HUI, RGB_SAI, _______, U_T_AUTO,U_T_AGCR,_______, _______, _______, _______, _______,   KC_MPRV, KC_MNXT, KC_VOLD,
         _______, RGB_RMOD,RGB_VAD, RGB_MOD, RGB_HUD, RGB_SAD, _______, _______, _______, _______, _______, _______, _______,
-        _______, RGB_TOG, _______, _______, _______, MD_BOOT, NK_TOGG, _______, _______, _______, _______, _______,                              _______,
-        _______, GU_TOGG, _______,                   _______,                            _______, _______, _______, _______,            _______, _______, _______
+        _______, RGB_TOGL, _______, _______, RGB_TOG, MD_BOOT, NK_TOGG, _______, _______, _______, _______, _______,                              _______,
+        _______, GU_TOGGL, _______,                   _______,                            _______, _______, _______, _______,            _______, _______, _______
     ),
     /*
     [X] = LAYOUT(
@@ -42,6 +44,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define MODS_SHIFT  (get_mods() & MOD_MASK_SHIFT)
 #define MODS_CTRL   (get_mods() & MOD_MASK_CTRL)
 #define MODS_ALT    (get_mods() & MOD_MASK_ALT)
+// test for windows disabled indicator
+int TEST_WIN;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static uint32_t key_timer;
@@ -86,7 +90,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             return false;
-        case RGB_TOG:
+        case GU_TOGGL:
+            if (record->event.pressed) {
+                if (!TEST_WIN) {
+                    TEST_WIN = 1;
+                    keymap_config.no_gui = true;
+                } else {
+                    TEST_WIN = 0;
+                    keymap_config.no_gui = false;
+                }
+            }
+            return false;
+        case RGB_TOGL:
             if (record->event.pressed) {
               switch (rgb_matrix_get_flags()) {
                 case LED_FLAG_ALL: {
@@ -121,7 +136,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // Adding feature where caps lock light turns off when caps word is enabled. does not interfere with default caps indicator
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (is_caps_word_on()){
-        RGB_MATRIX_INDICATOR_SET_COLOR(50, 0, 0, 0);
+        RGB_MATRIX_INDICATOR_SET_COLOR(50, 255, 255, 255);
+    }
+    if (TEST_WIN) {
+        RGB_MATRIX_INDICATOR_SET_COLOR(77, 0, 0, 0);
     }
 
     return true;
