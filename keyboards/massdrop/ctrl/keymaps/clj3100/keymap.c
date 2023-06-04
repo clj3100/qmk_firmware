@@ -94,16 +94,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     rgb_matrix_set_color_all(0, 0, 0);
                   }
                   break;
-                case (LED_FLAG_KEYLIGHT | LED_FLAG_MODIFIER | LED_FLAG_INDICATOR): {
-                    rgb_matrix_set_flags(LED_FLAG_UNDERGLOW);
-                    rgb_matrix_set_color_all(0, 0, 0);
-                  }
-                  break;
-                case LED_FLAG_UNDERGLOW: {
-                    rgb_matrix_set_flags(LED_FLAG_NONE);
-                    rgb_matrix_disable_noeeprom();
-                  }
-                  break;
+                //   Removing all off and only underglow options so this just toggles the underglow now
+                // case (LED_FLAG_KEYLIGHT | LED_FLAG_MODIFIER | LED_FLAG_INDICATOR): {
+                //     rgb_matrix_set_flags(LED_FLAG_UNDERGLOW);
+                //     rgb_matrix_set_color_all(0, 0, 0);
+                //   }
+                //   break;
+                // case LED_FLAG_UNDERGLOW: {
+                //     rgb_matrix_set_flags(LED_FLAG_NONE);
+                //     rgb_matrix_disable_noeeprom();
+                //   }
+                //   break;
                 default: {
                     rgb_matrix_set_flags(LED_FLAG_ALL);
                     rgb_matrix_enable_noeeprom();
@@ -115,4 +116,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         default:
             return true; //Process all other keycodes normally
     }
+}
+
+// Adding feature where caps lock light turns off when caps word is enabled. does not interfere with default caps indicator
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (is_caps_word_on()){
+        RGB_MATRIX_INDICATOR_SET_COLOR(50, 0, 0, 0);
+    }
+
+    return true;
 }
