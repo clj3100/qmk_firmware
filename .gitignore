@@ -109,3 +109,8 @@ compile_commands.json
 
 # VIA(L) json files that don't belong in QMK repo
 via*.json
+
+# Python venv
+bin/
+lib/
+pyvenv.cfg
