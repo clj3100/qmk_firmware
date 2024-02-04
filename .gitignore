@@ -114,6 +114,6 @@ via*.json
 
 # Python venv
 bin/
-lib/
+lib/python3.11/
 pyvenv.cfg
 lib64
